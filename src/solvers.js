@@ -12,19 +12,47 @@
 
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
-
-
-
 window.findNRooksSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  var board = new Board( {n: n} );
+  var matrix = board.rows();
+  var inner = function(row, invalid) {
+    if (n === row) {
+      return;
+    }
+    for (var i = 0; i < matrix[row].length; i++) {
+      if (!invalid[i]) {
+        matrix[row][i] = 1;
+        invalid[i] = 1;
+        return inner(row + 1, invalid);
+      }
+    }
+  };
+  inner(0, {});
+  //console.log('Single solution for ' + n + ' rooks:', JSON.stringify(matrix));
+  return matrix;
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var solutionCount = 0; //fixme
+  var board = new Board( {n: n} );
+  var matrix = board.rows();
+  debugger;
+  var inner = function(row, invalid, temp) {
+    if (n === row) {
+      solutionCount = solutionCount + 1;
+      return solutionCount;
+    }
+    if (typeof(temp) === 'number') {
+      invalid[temp] = 1;
+    }
+    for (var i = 0; i < matrix[row].length; i++) {
+      if (!invalid[i]) {
+        return solutionCount += inner(row + 1, invalid, i);
+      }
+    }
+  };
+  return inner(0, {});
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
