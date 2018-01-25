@@ -37,22 +37,24 @@ window.countNRooksSolutions = function(n) {
   var solutionCount = 0; //fixme
   var board = new Board( {n: n} );
   var matrix = board.rows();
-  debugger;
+  // debugger;
   var inner = function(row, invalid, temp) {
     if (n === row) {
       solutionCount = solutionCount + 1;
-      return solutionCount;
+      // return solutionCount;
+      return;
     }
     if (typeof(temp) === 'number') {
       invalid[temp] = 1;
     }
     for (var i = 0; i < matrix[row].length; i++) {
       if (!invalid[i]) {
-        return solutionCount += inner(row + 1, invalid, i);
+        inner(row + 1, invalid, i);
+        delete invalid[i];
       }
     }
   };
-  return inner(0, {});
+  inner(0, {});
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
@@ -60,16 +62,82 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
-
-  console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
-  return solution;
+  var board = new Board( {n: n} );
+  var matrix = board.rows();
+  var foundSolution = false;
+  var inner = function(row, invalidStraight, invalidLeft, invalidRight) {
+    if (n === row) {
+      foundSolution = true;
+      return;
+    }
+    
+    for (var i = 0; i < matrix[row].length; i++) {
+      if (!invalidStraight[i] && !invalidLeft[i] && !invalidRight[i]) {
+        var newInvalidLeft = {};
+        var newInvalidRight = {};
+        
+        matrix[row][i] = 1;
+        
+        for (var leftKey in invalidLeft) {
+          newInvalidLeft[Number(leftKey) - 1] = 1;
+        }
+        for (var rightKey in invalidRight) {
+          newInvalidRight[Number(rightKey) + 1] = 1;
+        }
+        
+        invalidStraight[i] = 1;
+        newInvalidLeft[i - 1] = 1;
+        newInvalidRight[i + 1] = 1;        
+        
+        inner(row + 1, invalidStraight, newInvalidLeft, newInvalidRight, i);
+        
+        delete invalidStraight[i];
+        if (foundSolution) {
+          return;
+        }
+        matrix[row][i] = 0;
+      }
+    }
+  };
+  inner(0, {}, {}, {});
+  return matrix;
 };
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
-
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
+  var board = new Board( {n: n} );
+  var matrix = board.rows();
+  var solutionCount = 0;
+  
+  var inner = function(row, invalidStraight, invalidLeft, invalidRight) {
+    
+    if (n === row) {
+      solutionCount++;
+      return;
+    }
+    
+    for (var i = 0; i < matrix[row].length; i++) {
+      if (!invalidStraight[i] && !invalidLeft[i] && !invalidRight[i]) {
+        var newInvalidLeft = {};
+        var newInvalidRight = {};
+        
+        for (var leftKey in invalidLeft) {
+          newInvalidLeft[Number(leftKey) - 1] = 1;
+        }
+        for (var rightKey in invalidRight) {
+          newInvalidRight[Number(rightKey) + 1] = 1;
+        }
+        
+        invalidStraight[i] = 1;
+        newInvalidLeft[i - 1] = 1;
+        newInvalidRight[i + 1] = 1;        
+        
+        inner(row + 1, invalidStraight, newInvalidLeft, newInvalidRight, i);
+        
+        delete invalidStraight[i];
+      }
+    }
+  };
+  inner(0, {}, {}, {});
   return solutionCount;
 };
