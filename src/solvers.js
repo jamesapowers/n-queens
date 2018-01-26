@@ -37,11 +37,11 @@ window.countNRooksSolutions = function(n) {
   var solutionCount = 0; //fixme
   var board = new Board( {n: n} );
   var matrix = board.rows();
-  // debugger;
+  
   var inner = function(row, invalid, temp) {
+    
     if (n === row) {
       solutionCount = solutionCount + 1;
-      // return solutionCount;
       return;
     }
     if (typeof(temp) === 'number') {
@@ -54,9 +54,10 @@ window.countNRooksSolutions = function(n) {
       }
     }
   };
+  
   inner(0, {});
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
+  // console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
 };
 

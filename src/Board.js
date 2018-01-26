@@ -130,13 +130,26 @@
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
       var matrix = this.rows();
-      var newMatrix = this.transposeMatrix(matrix);
-      for (var k = 0; k < newMatrix.length; k++) {
-        if (this.hasColConflictAt(newMatrix[k])) {
-          return true;
+      var invalid = {};
+      // var newMatrix = this.transposeMatrix(matrix);
+      // for (var k = 0; k < newMatrix.length; k++) {
+      //   if (this.hasColConflictAt(newMatrix[k])) {
+      //     return true;
+      //   }
+      // }
+      // return false; // fixme
+      
+      for (var row = 0; row < matrix.length; row++) {
+        for (var col = 0; col < matrix[row].length; col++) {
+          if (matrix[row][col] === 1) {
+            if (invalid[col]) {
+              return true;
+            }
+            invalid[col] = 1;
+          }
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
